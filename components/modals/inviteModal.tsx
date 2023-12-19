@@ -16,6 +16,7 @@ import { Check, Copy, RefreshCw } from "lucide-react";
 
 import { useOrigin } from "@/hooks/useOrigin";
 import { useState } from "react";
+import { ServerType } from "@/types";
 
 const InviteModal = () => {
   const [copied, setCopied] = useState(false);
@@ -26,7 +27,8 @@ const InviteModal = () => {
   const origin = useOrigin();
 
   const isModalOpen = isOpen && type === "invite";
-  const { server } = data;
+  let server: ServerType | undefined;
+  if (data) server = data.server;
 
   const inviteUrl = `${origin}/invite/${server?.inviteCode}`;
 
@@ -46,7 +48,6 @@ const InviteModal = () => {
         method: "PATCH",
       });
       const updatedServer = await res.json();
-
       dispatch(onOpen({ type: "invite", data: { server: updatedServer } }));
     } catch (error: any) {
       console.log("Error while generating invite code", error.message);
@@ -69,6 +70,7 @@ const InviteModal = () => {
           </Label>
           <div className="flex items-center mt-2 gap-x-2">
             <Input
+              readOnly
               disabled={isLoading}
               className="bg-zinc-300/50 border-0 text-black
                 focus-visible:ring-0 focus-visible:ring-offset-0"

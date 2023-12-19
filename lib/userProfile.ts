@@ -9,7 +9,7 @@ export const userProfile = async () => {
 
   try {
     connectToDB();
-    const profile = await Profile.findOne({ userid: userId });
+    const profile = await Profile.findOne({ userId: userId });
 
     return profile;
   } catch (error: any) {

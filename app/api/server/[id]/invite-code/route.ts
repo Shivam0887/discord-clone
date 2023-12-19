@@ -15,9 +15,14 @@ export async function PATCH(
 
   try {
     connectToDB();
-    const serverWithNewCode = await Server.findByIdAndUpdate(params.id, {
-      $set: { inviteCode: cypto.randomUUID() },
-    });
+    const newInviteCode = cypto.randomUUID();
+    const serverWithNewCode = await Server.findByIdAndUpdate(
+      params.id,
+      {
+        $set: { inviteCode: newInviteCode },
+      },
+      { new: true }
+    );
 
     return NextResponse.json(serverWithNewCode, { status: 200 });
   } catch (error: any) {

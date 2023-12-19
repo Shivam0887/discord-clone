@@ -1,6 +1,5 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { auth } from "@clerk/nextjs";
-import { NextRequest } from "next/server";
 
 const f = createUploadthing();
 
@@ -15,7 +14,7 @@ export const ourFileRouter = {
   serverImage: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
     .middleware(() => handleAuth())
     .onUploadComplete(() => {}),
-  attachedFile: f(["image", "pdf", "video"])
+  attachedFile: f(["image", "pdf", "video/mp4"])
     .middleware(() => handleAuth())
     .onUploadComplete(() => {}),
 } satisfies FileRouter;

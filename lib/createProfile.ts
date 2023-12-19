@@ -5,12 +5,12 @@ import { redirect } from "next/navigation";
 
 export const createProfile = async () => {
   const user = await currentUser();
-  if (!user) redirect("/sign-in");
+  if (!user) return redirect("/sign-in");
 
   try {
     connectToDB();
     const profile = await Profile.findOne({ userId: user?.id });
-    if (profile) return profile;
+    if (profile?.userId) return profile;
 
     // creating a new profile
     const newProfile = await Profile.create({

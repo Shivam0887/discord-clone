@@ -54,7 +54,7 @@ const CreateServerModal = () => {
   const isModalOpen = isOpen && type === "createServer";
   const isFormSubmitting = form.formState.isSubmitting;
 
-  const onSumbit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await fetch("/api/server", {
         headers: {
@@ -90,7 +90,7 @@ const CreateServerModal = () => {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSumbit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="space-y-8 px-6">
               <div className="flex items-center justify-center text-center">
                 <FormField

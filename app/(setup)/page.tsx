@@ -1,7 +1,7 @@
 import InitialModal from "@/components/modals/InitialModal";
 import { connectToDB } from "@/lib/dbConnection";
 import { createProfile } from "@/lib/createProfile";
-import { Server } from "@/lib/modals/modals";
+import { Profile, Server } from "@/lib/modals/modals";
 import { redirect } from "next/navigation";
 
 const SetupPage = async () => {
@@ -12,34 +12,22 @@ const SetupPage = async () => {
 
   try {
     connectToDB();
-    userServer = await Server.aggregate([
-      {
-        $unwind: "$members",
-      },
-      {
-        $lookup: {
-          from: "members",
-          localField: "members",
-          foreignField: "_id",
-          as: "members",
-        },
-      },
-      {
-        $match: {
-          "members.profileId": profile?._id,
-        },
-      },
-      {
-        $limit: 1,
-      },
-    ]).then((res) => (res.length ? res[0] : null));
+    const res = await Profile.findById(profile?._id, { _id: 0, server: 1 })
+      .populate({
+        path: "server",
+        model: Server,
+        select: "_id",
+      })
+      .limit(1);
+
+    userServer = res?.server[0];
   } catch (error) {
     if (error instanceof Error)
       console.log("Failed to find server : ", error.message);
   }
 
-  if (userServer) {
-    return redirect(`/server/${userServer._id.toString()}`);
+  if (userServer?._id?.toString()) {
+    return redirect(`/server/${userServer?._id?.toString()}`);
   }
 
   return <InitialModal />;
