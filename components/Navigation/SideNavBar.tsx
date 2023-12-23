@@ -1,8 +1,3 @@
-import { userProfile } from "@/lib/userProfile";
-import { connectToDB } from "@/lib/dbConnection";
-import { Profile, Server } from "@/lib/modals/modals";
-
-import { redirect } from "next/navigation";
 import NavigationAction from "./NavigationAction";
 
 import { Separator } from "@/components/ui/separator";

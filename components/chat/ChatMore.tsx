@@ -20,7 +20,7 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 
 type ChatMoreProps = {
-  messageId: string;
+  messageId: string | undefined;
   type: "channel" | "conversation";
   socketUrl: string;
   socketQuery: Record<string, string>;

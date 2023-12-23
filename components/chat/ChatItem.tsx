@@ -24,7 +24,7 @@ import ChatMore from "./ChatMore";
 import ChatReactions from "./ChatReactions";
 
 type ChatItemProps = {
-  id: string;
+  id: string | undefined;
   content: string;
   member: string;
   reactions: ReactionType[];

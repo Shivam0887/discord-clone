@@ -16,6 +16,7 @@ import { useAppDispatch, useAppSelector } from "@/store";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ServerType } from "@/types";
 
 const LeaveServerModal = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -28,9 +29,14 @@ const LeaveServerModal = () => {
   const onLeave = async () => {
     try {
       setIsLoading(true);
-      await fetch(`/api/server/${data?.server?._id.toString()}/leave-server`, {
-        method: "PATCH",
-      });
+      await fetch(
+        `/api/server/${(
+          data?.server as ServerType
+        )?._id.toString()}/leave-server`,
+        {
+          method: "PATCH",
+        }
+      );
 
       dispatch(onClose());
       router.refresh();
@@ -53,7 +59,7 @@ const LeaveServerModal = () => {
           <DialogDescription className="text-center text-zinc-500">
             Are you sure you want to leave{" "}
             <span className="font-semibold text-indigo-500">
-              {data?.server?.name}
+              {(data?.server as ServerType)?.name}
             </span>{" "}
             ?
           </DialogDescription>

@@ -35,6 +35,7 @@ import { useRouter } from "next/navigation";
 import { onClose } from "@/features/modalSlice";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { useEffect } from "react";
+import { ServerType } from "@/types";
 
 const ChannelType = ["TEXT", "AUDIO", "VIDEO"] as const;
 
@@ -76,7 +77,9 @@ const EditChannelModal = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await fetch(
-        `/api/channel/${data?.channel?._id.toString()}?serverId=${data?.server?._id.toString()}`,
+        `/api/channel/${data?.channel?._id.toString()}?serverId=${(
+          data?.server as ServerType
+        )?._id.toString()}`,
         {
           headers: {
             "Content-Type": "application/json",

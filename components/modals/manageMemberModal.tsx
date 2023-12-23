@@ -46,7 +46,7 @@ const ManageMemberModal = () => {
 
   const isModalOpen = isOpen && type === "manageMembers";
   let server: ServerType | undefined;
-  if (data) server = data.server;
+  if (data) server = data.server as ServerType;
 
   type roleIconType = {
     [role: string]: React.JSX.Element | null;

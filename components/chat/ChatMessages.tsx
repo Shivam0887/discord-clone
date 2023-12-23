@@ -100,7 +100,7 @@ const ChatMessages = ({
             {group?.data.map((message: MessageType) => (
               <Fragment key={message._id?.toString()}>
                 <ChatItem
-                  id={message._id?.toString()}
+                  id={message?._id?.toString()}
                   reactions={message.reactions}
                   type={type}
                   member={JSON.stringify(message.memberId)}

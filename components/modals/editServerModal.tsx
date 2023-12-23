@@ -54,7 +54,7 @@ const EditServerModal = () => {
   });
 
   let server: ServerType | undefined;
-  if (data) server = data.server;
+  if (data) server = data.server as ServerType;
 
   useEffect(() => {
     form.setValue("serverName", server?.name || "");

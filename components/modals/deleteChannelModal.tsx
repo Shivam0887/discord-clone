@@ -16,6 +16,7 @@ import { useAppDispatch, useAppSelector } from "@/store";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ServerType } from "@/types";
 
 const DeleteChannelModal = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -29,7 +30,9 @@ const DeleteChannelModal = () => {
     try {
       setIsLoading(true);
       await fetch(
-        `/api/channel/${data?.channel?._id.toString()}?serverId=${data?.server?._id.toString()}`,
+        `/api/channel/${data?.channel?._id.toString()}?serverId=${(
+          data?.server as ServerType
+        )?._id.toString()}`,
         {
           method: "DELETE",
         }
@@ -37,7 +40,7 @@ const DeleteChannelModal = () => {
 
       dispatch(onClose());
       router.refresh();
-      router.push(`/server/${data?.server?._id.toString()}`);
+      router.push(`/server/${(data?.server as ServerType)?._id.toString()}`);
     } catch (error) {
       if (error instanceof Error)
         console.log("Error while deleting the server", error.message);

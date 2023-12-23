@@ -28,7 +28,7 @@ const InviteModal = () => {
 
   const isModalOpen = isOpen && type === "invite";
   let server: ServerType | undefined;
-  if (data) server = data.server;
+  if (data) server = data.server as ServerType;
 
   const inviteUrl = `${origin}/invite/${server?.inviteCode}`;
 

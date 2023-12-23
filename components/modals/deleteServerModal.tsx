@@ -16,6 +16,7 @@ import { useAppDispatch, useAppSelector } from "@/store";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ServerType } from "@/types";
 
 const DeleteServerModal = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -28,9 +29,12 @@ const DeleteServerModal = () => {
   const onDelete = async () => {
     try {
       setIsLoading(true);
-      await fetch(`/api/server?serverId=${data?.server?._id.toString()}`, {
-        method: "DELETE",
-      });
+      await fetch(
+        `/api/server?serverId=${(data?.server as ServerType)?._id.toString()}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       dispatch(onClose());
       router.refresh();
@@ -53,7 +57,7 @@ const DeleteServerModal = () => {
           <DialogDescription className="text-center text-zinc-500">
             Are you sure you want to do this? <br />
             <span className="font-semibold text-indigo-500">
-              {data?.server?.name}
+              {(data?.server as ServerType)?.name}
             </span>{" "}
             will be permanently deleted.
           </DialogDescription>

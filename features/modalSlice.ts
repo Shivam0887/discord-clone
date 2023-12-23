@@ -23,7 +23,7 @@ export type ModalData = {
   query?: Record<string, string>;
   type?: string;
   message?: {
-    id: string;
+    id: string | undefined;
     name: string;
     memberId: string;
     content: string;
