@@ -48,7 +48,7 @@ export type NextApiResponseWithServerIO = NextApiResponse & {
 };
 
 export type ReactionType = {
-  _id: Schema.Types.ObjectId;
+  _id?: Schema.Types.ObjectId;
   emoji: string;
   channelId?: string;
   conversationId?: string;
@@ -62,7 +62,7 @@ export type ReactionType = {
 };
 
 export type ReplyType = {
-  _id: Schema.Types.ObjectId;
+  _id?: Schema.Types.ObjectId;
   channelId?: string;
   conversationId?: string;
   memberId_repliedTo: string;
@@ -75,7 +75,7 @@ export type ReplyType = {
 };
 
 export type MessageType = {
-  _id: Schema.Types.ObjectId;
+  _id?: Schema.Types.ObjectId;
   content: string;
   fileUrl?: string;
   memberId: string | MemberType;
@@ -89,7 +89,7 @@ export type MessageType = {
 };
 
 export type DirectMessageType = {
-  _id: Schema.Types.ObjectId;
+  _id?: Schema.Types.ObjectId;
   content: string;
   fileUrl?: string;
   memberId: string | MemberType;
