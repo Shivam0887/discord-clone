@@ -1,5 +1,6 @@
 import { Schema, models, model } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import { string } from "zod";
 
 // Profile schema
 const profileSchema = new Schema(
@@ -59,13 +60,6 @@ const serverSchema = new Schema(
   { timestamps: true }
 );
 
-// Member schema
-// enum MemberRole {
-//   ADMIN = "ADMIN",
-//   MODERATOR = "MODERATOR",
-//   GUEST = "GUEST",
-// }
-
 const memberSchema = new Schema(
   {
     role: {
@@ -124,6 +118,71 @@ const channelSchema = new Schema(
   { timestamps: true }
 );
 
+const reactionSchema = new Schema(
+  {
+    emoji: String,
+    users: [
+      {
+        channelId: {
+          type: String,
+          required: false,
+        },
+        conversationId: {
+          type: String,
+          required: false,
+        },
+        memberId: String,
+        profileId: String,
+        role: String,
+        name: String,
+        imageUrl: String,
+      },
+    ],
+    message: {
+      type: Schema.Types.ObjectId,
+      ref: "Message",
+      required: false,
+    },
+    directMessage: {
+      type: Schema.Types.ObjectId,
+      ref: "DirectMessage",
+      required: false,
+    },
+  },
+  { timestamps: true }
+);
+
+const replySchema = new Schema(
+  {
+    channelId: {
+      type: String,
+      required: false,
+    },
+    conversationId: {
+      type: String,
+      required: false,
+    },
+    imageUrl: String,
+    memberId_repliedTo: String,
+    memberId_repliedFrom: String,
+    messageId_repliedTo: String,
+    serverId: String,
+    name: String,
+    content: String,
+    message: {
+      type: Schema.Types.ObjectId,
+      ref: "Message",
+      required: false,
+    },
+    directMessage: {
+      type: Schema.Types.ObjectId,
+      ref: "DirectMessage",
+      required: false,
+    },
+  },
+  { timestamps: true }
+);
+
 // This model is used to store the messages b/w a channel and a user.
 const messageSchema = new Schema(
   {
@@ -141,10 +200,21 @@ const messageSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Channel",
     },
+    reactions: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Reaction",
+      },
+    ],
     isDeleted: {
       type: Boolean,
       default: false,
     },
+    reply: {
+      type: Schema.Types.ObjectId,
+      ref: "Reply",
+    },
+    isReply: Boolean,
   },
   { timestamps: true }
 );
@@ -176,6 +246,12 @@ const directMessageSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Member",
     },
+    reactions: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Reaction",
+      },
+    ],
     conversationId: {
       type: Schema.Types.ObjectId,
       ref: "Conversation",
@@ -184,6 +260,11 @@ const directMessageSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    reply: {
+      type: Schema.Types.ObjectId,
+      ref: "Reply",
+    },
+    isReply: Boolean,
   },
   { timestamps: true }
 );
@@ -193,6 +274,8 @@ const Server = models?.Server || model("Server", serverSchema);
 const Member = models?.Member || model("Member", memberSchema);
 const Channel = models?.Channel || model("Channel", channelSchema);
 const Message = models?.Message || model("Message", messageSchema);
+const Reply = models?.Reply || model("Reply", replySchema);
+const Reaction = models?.Reaction || model("Reaction", reactionSchema);
 const Conversation =
   models?.Conversation || model("Conversation", conversationSchema);
 const DirectMessage =
@@ -207,4 +290,6 @@ export {
   Message,
   Conversation,
   DirectMessage,
+  Reply,
+  Reaction,
 };

@@ -1,15 +1,17 @@
 import { connectToDB } from "@/lib/dbConnection";
 import {
-  Channel,
   Conversation,
   DirectMessage,
   Member,
-  Message,
   Profile,
-  Server,
+  Reply,
 } from "@/lib/modals/modals";
 import { userProfilePages } from "@/lib/userProfilePages";
-import { DirectMessageType, NextApiResponseWithServerIO } from "@/types";
+import {
+  DirectMessageType,
+  MemberType,
+  NextApiResponseWithServerIO,
+} from "@/types";
 import { Types } from "mongoose";
 import { NextApiRequest } from "next";
 
@@ -22,13 +24,13 @@ export default async function handler(
 
   try {
     const profile = await userProfilePages(req);
-    if (!profile) return res.status(401).json({ error: "Unauthorized" });
+    if (!profile?._id) return res.status(401).json({ error: "Unauthorized" });
 
-    const { content, fileUrl } = req.body;
+    const { content, fileUrl, isReply, reply } = req.body;
     const { conversationId } = req.query;
 
-    if (!conversationId)
-      return res.status(400).json({ error: "Server id is missing" });
+    if (!(conversationId as string))
+      return res.status(400).json({ error: "conversation id is missing" });
 
     const conversationObjectId = new Types.ObjectId(conversationId as string);
 
@@ -68,16 +70,40 @@ export default async function handler(
       return res.status(404).json({ message: "Conversation not found" });
     }
 
-    if (!member) {
+    if (!member?._id) {
       return res.status(404).json({ message: "message not found" });
     }
 
-    const message = await DirectMessage.create({
+    let newReply;
+    if (isReply) {
+      reply.memberId_repliedFrom = member?._id?.toString();
+      newReply = await Reply.create(reply);
+    }
+
+    let message = await DirectMessage.create({
       content,
       fileUrl,
+      isReply,
+      reply: newReply?._id,
       memberId: member?._id,
       conversationId: conversationObjectId,
     });
+
+    if (isReply) {
+      await Reply.findByIdAndUpdate(
+        newReply?._id,
+        {
+          $set: {
+            message: message?._id,
+          },
+        },
+        { timestamps: false }
+      );
+      message = await DirectMessage.findById(message?._id).populate({
+        path: "reply",
+        model: Reply,
+      });
+    }
 
     await Conversation.findByIdAndUpdate(conversationObjectId, {
       $push: {
@@ -105,11 +131,13 @@ export default async function handler(
       },
     });
 
-    const resp: DirectMessageType = {
+    const resp = {
       _id: message?._id,
       content: message?.content,
       fileUrl: message?.fileUrl,
-      memberId: member,
+      memberId: member as MemberType,
+      isReply: message?.isReply,
+      reply: message?.reply,
       conversationId: message?.conversationId,
       isDeleted: message?.isDeleted,
       createdAt: message?.createdAt,

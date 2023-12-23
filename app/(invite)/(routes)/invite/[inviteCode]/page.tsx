@@ -1,7 +1,6 @@
 import { connectToDB } from "@/lib/dbConnection";
 import { Member, Profile, Server } from "@/lib/modals/modals";
 import { userProfile } from "@/lib/userProfile";
-import { redirectToSignIn } from "@clerk/nextjs";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -11,7 +10,7 @@ const InviteCodePage = async ({
   params: { inviteCode: string };
 }) => {
   const profile = await userProfile();
-  if (!profile) return redirectToSignIn();
+  if (!profile) return redirect("/sign-in");
 
   if (!params.inviteCode) return redirect("/");
 

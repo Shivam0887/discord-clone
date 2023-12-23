@@ -1,10 +1,11 @@
 import { connectToDB } from "@/lib/dbConnection";
 import {
-  Channel,
   Conversation,
   DirectMessage,
   Member,
   Profile,
+  Reaction,
+  Reply,
 } from "@/lib/modals/modals";
 import { userProfilePages } from "@/lib/userProfilePages";
 import { DirectMessageType, NextApiResponseWithServerIO } from "@/types";
@@ -101,7 +102,15 @@ export default async function handler(
           },
         },
         { new: true }
-      );
+      )
+        .populate({
+          path: "reactions",
+          model: Reaction,
+        })
+        .populate({
+          path: "reply",
+          model: Reply,
+        });
     }
     if (req.method === "PATCH") {
       if (isSender) {
@@ -116,7 +125,15 @@ export default async function handler(
           },
         },
         { new: true }
-      );
+      )
+        .populate({
+          path: "reactions",
+          model: Reaction,
+        })
+        .populate({
+          path: "reply",
+          model: Reply,
+        });
     }
 
     const resp: DirectMessageType = {
@@ -125,6 +142,9 @@ export default async function handler(
       fileUrl: message?.fileUrl,
       memberId: member,
       conversationId: message?.conversationId,
+      reply: message?.reply,
+      isReply: message?.reply,
+      reactions: message?.reactions,
       isDeleted: message?.isDeleted,
       createdAt: message?.createdAt,
       updatedAt: message?.updatedAt,

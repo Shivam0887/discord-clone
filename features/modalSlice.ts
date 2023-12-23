@@ -1,4 +1,4 @@
-import { ChannelType, ServerType } from "@/types";
+import { ChannelType, MessageType, ServerType } from "@/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type ModalType =
@@ -12,15 +12,23 @@ export type ModalType =
   | "deleteChannel"
   | "editChannel"
   | "messageFile"
-  | "deleteMessage";
+  | "deleteMessage"
+  | "replyMessage";
 
 export type ModalData = {
-  server?: ServerType;
+  server?: ServerType | string;
   channelType?: "TEXT" | "AUDIO" | "VIDEO";
   channel?: ChannelType;
   apiUrl?: string;
   query?: Record<string, string>;
   type?: string;
+  message?: {
+    id: string;
+    name: string;
+    memberId: string;
+    content: string;
+    imageUrl: string;
+  };
 };
 
 type ModalStore = {

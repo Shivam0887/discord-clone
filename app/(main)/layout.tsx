@@ -4,11 +4,12 @@ import { Profile, Server } from "@/lib/modals/modals";
 import { userProfile } from "@/lib/userProfile";
 import { ServerType } from "@/types";
 import { redirectToSignIn } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
 const MainLayout = async ({ children }: { children: React.ReactNode }) => {
   const profile = await userProfile();
 
-  if (!profile) return redirectToSignIn();
+  if (!profile) return redirect("/sign-in");
 
   type serverType = Pick<ServerType, "_id" | "name" | "imageUrl">;
   let servers: serverType[] = [];

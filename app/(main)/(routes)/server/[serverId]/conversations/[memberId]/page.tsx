@@ -2,6 +2,7 @@ import ChatHeader from "@/components/chat/ChatHeader";
 import ChatInput from "@/components/chat/ChatInput";
 import ChatMessages from "@/components/chat/ChatMessages";
 import { MediaRoom } from "@/components/media-room";
+import ReplyMessage from "@/components/reply-message";
 import { getOrCreateConversation } from "@/lib/conversation";
 import { connectToDB } from "@/lib/dbConnection";
 import { Member } from "@/lib/modals/modals";
@@ -88,6 +89,7 @@ const ConversationPage = async ({ params, searchParams }: MemberIdProps) => {
             socketUrl="/api/socket/direct-messages"
             socketQuery={{ conversationId }}
           />
+          <ReplyMessage />
           <ChatInput
             name={otherMember?.profileId?.name}
             type="conversation"

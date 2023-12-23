@@ -2,6 +2,7 @@ import ChatHeader from "@/components/chat/ChatHeader";
 import ChatInput from "@/components/chat/ChatInput";
 import ChatMessages from "@/components/chat/ChatMessages";
 import { MediaRoom } from "@/components/media-room";
+import ReplyMessage from "@/components/reply-message";
 import { connectToDB } from "@/lib/dbConnection";
 import { Channel, Member, Profile } from "@/lib/modals/modals";
 import { userProfile } from "@/lib/userProfile";
@@ -59,6 +60,7 @@ const ChannelPage = async ({ params }: ChannelPageProps) => {
             paramKey="channelId"
             paramValue={channel?._id?.toString()}
           />
+          <ReplyMessage />
           <ChatInput
             name={channel?.name}
             type="channel"

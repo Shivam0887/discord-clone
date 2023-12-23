@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageType } from "@/types";
+import { MemberType, MessageType } from "@/types";
 import ChatWelcome from "./ChatWelcome";
 import { useChatQuery } from "@/hooks/useChatQuery";
 import { Loader2, ServerCrash } from "lucide-react";
@@ -9,6 +9,7 @@ import ChatItem from "./ChatItem";
 import { format } from "date-fns";
 import useChatSocket from "@/hooks/useChatSocket";
 import useChatScroll from "@/hooks/useChatScroll";
+import ChatReply from "./ChatReply";
 
 const DATE_FORMAT = "d MMM yyyy, HH:mm";
 
@@ -97,20 +98,28 @@ const ChatMessages = ({
         {data?.pages?.map((group, i) => (
           <Fragment key={i}>
             {group?.data.map((message: MessageType) => (
-              <ChatItem
-                key={message._id?.toString()}
-                id={message._id?.toString()}
-                type={type}
-                member={JSON.stringify(message.memberId)}
-                currentMember={member}
-                content={message.content}
-                fileUrl={message.fileUrl}
-                deleted={message.isDeleted}
-                timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
-                isUpdated={message.createdAt !== message.updatedAt}
-                socketUrl={socketUrl}
-                socketQuery={socketQuery}
-              />
+              <Fragment key={message._id?.toString()}>
+                <ChatItem
+                  id={message._id?.toString()}
+                  reactions={message.reactions}
+                  type={type}
+                  member={JSON.stringify(message.memberId)}
+                  currentMember={member}
+                  content={message.content}
+                  fileUrl={message.fileUrl}
+                  deleted={message.isDeleted}
+                  timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
+                  isUpdated={message.createdAt !== message.updatedAt}
+                  socketUrl={socketUrl}
+                  socketQuery={socketQuery}
+                />
+                {message.isReply && (
+                  <ChatReply
+                    reply={message.reply}
+                    memberId={(message.memberId as MemberType)._id.toString()}
+                  />
+                )}
+              </Fragment>
             ))}
           </Fragment>
         ))}

@@ -1,7 +1,7 @@
 import { connectToDB } from "@/lib/dbConnection";
-import { Channel, Member, Message, Server } from "@/lib/modals/modals";
+import { Channel, Member, Message, Reply, Server } from "@/lib/modals/modals";
 import { userProfilePages } from "@/lib/userProfilePages";
-import { MessageType, NextApiResponseWithServerIO } from "@/types";
+import { MessageType, NextApiResponseWithServerIO, ReplyType } from "@/types";
 import { Types } from "mongoose";
 import { NextApiRequest } from "next";
 
@@ -16,7 +16,8 @@ export default async function handler(
     const profile = await userProfilePages(req);
     if (!profile?._id) return res.status(401).json({ error: "Unauthorized" });
 
-    const { content, fileUrl } = req.body;
+    const { content, fileUrl, isReply, reply } = req.body;
+
     const { serverId, channelId } = req.query;
 
     if (!serverId)
@@ -100,26 +101,56 @@ export default async function handler(
     if (!channel?._id)
       return res.status(404).json({ message: "Channel not found" });
 
-    const message = await Message.create({
+    let newReply;
+    if (isReply) {
+      reply.memberId_repliedFrom = server?.members?._id.toString();
+      newReply = await Reply.create(reply);
+    }
+
+    let message = await Message.create({
       content,
       fileUrl,
+      isReply,
+      reply: newReply?._id,
       memberId: server?.members?._id,
       channelId: channelObjectId,
     });
 
-    await Member.findByIdAndUpdate(server?.members?._id, {
-      $push: {
-        channelMessages: message?._id,
-      },
-    });
+    if (isReply) {
+      await Reply.findByIdAndUpdate(
+        newReply?._id,
+        {
+          $set: {
+            message: message?._id,
+          },
+        },
+        { timestamps: false }
+      );
+      message = await Message.findById(message?._id).populate({
+        path: "reply",
+        model: Reply,
+      });
+    }
 
-    const resp: MessageType = {
+    await Member.findByIdAndUpdate(
+      server?.members?._id,
+      {
+        $push: {
+          channelMessages: message?._id,
+        },
+      },
+      { timestamps: false }
+    );
+
+    const resp = {
       _id: message?._id,
       content: message?.content,
       fileUrl: message?.fileUrl,
       memberId: server?.members,
       channelId: message?.channelId,
       isDeleted: message?.isDeleted,
+      reply: message?.reply,
+      isReply: message?.isReply,
       createdAt: message?.createdAt,
       updatedAt: message?.updatedAt,
     };

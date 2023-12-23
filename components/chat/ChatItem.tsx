@@ -2,13 +2,13 @@
 
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MemberType, ProfileType } from "@/types";
+import { MemberType, ProfileType, ReactionType } from "@/types";
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { Edit, FileIcon, Trash, VideoIcon } from "lucide-react";
+import { Edit, FileIcon, MoreVertical, Trash, VideoIcon } from "lucide-react";
 
 import UserAvatar from "@/components/user-avatar";
 import { ActionTooltip } from "@/components/action-tooltip";
@@ -20,12 +20,15 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAppDispatch } from "@/store";
 import { onOpen } from "@/features/modalSlice";
+import ChatMore from "./ChatMore";
+import ChatReactions from "./ChatReactions";
 
 type ChatItemProps = {
   id: string;
   content: string;
   member: string;
-  type: string;
+  reactions: ReactionType[];
+  type: "channel" | "conversation";
   timestamp: string;
   fileUrl: string | undefined;
   deleted: boolean;
@@ -43,6 +46,7 @@ const ChatItem = ({
   id,
   content,
   currentMember,
+  reactions,
   deleted,
   fileUrl,
   isUpdated,
@@ -148,7 +152,7 @@ const ChatItem = ({
                 <p className="ml-2">{roleIconMap[otherMember.role]}</p>
               </ActionTooltip>
             </div>
-            <span className="text-xs text-zinc-500 dark:text-zinc-400">
+            <span className="text-xs text-zinc-500 dark:text-[#949ba4]">
               {timestamp}
             </span>
           </div>
@@ -187,19 +191,22 @@ const ChatItem = ({
             </div>
           )}
           {!fileUrl && !isEditing && (
-            <p
-              className={cn(
-                "text-sm font-normal text-zinc-600 dark:text-[#dbdee1] md:text-base",
-                deleted && "italic  text-zinc-500 text-xs mt-1 md:text-sm"
-              )}
-            >
-              {content}
-              {isUpdated && !deleted && (
-                <span className="text-[10px] mx-2 text-zinc-500 dark:text-zinc-400">
-                  (edited)
-                </span>
-              )}
-            </p>
+            <div>
+              <p
+                className={cn(
+                  "text-sm font-normal text-zinc-600 dark:text-[#dbdee1] md:text-base",
+                  deleted && "italic text-xs mt-1 md:text-sm"
+                )}
+              >
+                {content}
+                {isUpdated && !deleted && (
+                  <span className="text-[10px] mx-2 text-zinc-500 dark:text-zinc-400">
+                    (edited)
+                  </span>
+                )}
+              </p>
+              <ChatReactions reactions={reactions} />
+            </div>
           )}
           {!fileUrl && isEditing && (
             <Form {...form}>
@@ -240,7 +247,7 @@ const ChatItem = ({
       {canDeleteMessage && (
         <div
           className="hidden group-hover:flex items-center gap-x-2 absolute
-        p-1 -top-2 right-5 bg-white dark:bg-zinc-800 border rounded-sm"
+        p-1 -top-2 right-6 bg-white dark:bg-zinc-800 border rounded-sm"
         >
           {canEditMessage && (
             <ActionTooltip label="edit">
@@ -269,6 +276,17 @@ const ChatItem = ({
           </ActionTooltip>
         </div>
       )}
+
+      <ChatMore
+        messageId={id}
+        type={type}
+        socketQuery={socketQuery}
+        socketUrl={socketUrl}
+        content={content}
+        name={(otherMember.profileId as ProfileType)?.name}
+        memberId={otherMember?._id.toString()}
+        imageUrl={(otherMember.profileId as ProfileType)?.imageUrl}
+      />
     </div>
   );
 };

@@ -47,6 +47,33 @@ export type NextApiResponseWithServerIO = NextApiResponse & {
   };
 };
 
+export type ReactionType = {
+  _id: Schema.Types.ObjectId;
+  emoji: string;
+  channelId?: string;
+  conversationId?: string;
+  users: {
+    memberId: string;
+    profileId: string;
+    role: string;
+    name: string;
+    imageUrl: string;
+  }[];
+};
+
+export type ReplyType = {
+  _id: Schema.Types.ObjectId;
+  channelId?: string;
+  conversationId?: string;
+  memberId_repliedTo: string;
+  memberId_repliedFrom: string;
+  messageId_repliedTo: string;
+  serverId: string;
+  name: string;
+  content: string;
+  imageUrl: string;
+};
+
 export type MessageType = {
   _id: Schema.Types.ObjectId;
   content: string;
@@ -54,6 +81,9 @@ export type MessageType = {
   memberId: string | MemberType;
   channelId: string;
   isDeleted: boolean;
+  isReply: Boolean;
+  reactions: ReactionType[];
+  reply: ReplyType;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -62,9 +92,12 @@ export type DirectMessageType = {
   _id: Schema.Types.ObjectId;
   content: string;
   fileUrl?: string;
-  memberId: string;
+  memberId: string | MemberType;
   conversationId: string;
   isDeleted: boolean;
+  reactions: ReactionType[];
+  reply: ReplyType;
+  isReply: Boolean;
   createdAt: Date;
   updatedAt: Date;
 };

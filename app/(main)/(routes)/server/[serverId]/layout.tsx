@@ -14,7 +14,7 @@ const ServerIdLayout = async ({
   params: { serverId: string };
 }) => {
   const profile = await userProfile();
-  if (!profile) redirectToSignIn();
+  if (!profile) redirect("/sign-in");
 
   let server: ServerType | null = null;
   try {
